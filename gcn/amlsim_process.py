@@ -1,28 +1,9 @@
-"""
-Loads input data from gcn/data directory
-
-ind.dataset_str.x => the feature vectors of the training instances as scipy.sparse.csr.csr_matrix object;
-ind.dataset_str.tx => the feature vectors of the test instances as scipy.sparse.csr.csr_matrix object;
-ind.dataset_str.allx => the feature vectors of both labeled and unlabeled training instances
-    (a superset of ind.dataset_str.x) as scipy.sparse.csr.csr_matrix object;
-ind.dataset_str.y => the one-hot labels of the labeled training instances as numpy.ndarray object;
-ind.dataset_str.ty => the one-hot labels of the test instances as numpy.ndarray object;
-ind.dataset_str.ally => the labels for instances in ind.dataset_str.allx as numpy.ndarray object;
-ind.dataset_str.graph => a dict in the format {index: [index_of_neighbor_nodes]} as collections.defaultdict
-    object;
-ind.dataset_str.test.index => the indices of test instances in graph, for the inductive setting as list object.
-
-All objects above must be saved using python pickle module.
-
-:param dataset_str: Dataset name
-:return: All data input files loaded (as well the training/test data).
-"""
-
 import argparse
 import datetime
 import pickle
 from collections import defaultdict
 
+import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix
 from sklearn.model_selection import train_test_split
@@ -38,7 +19,7 @@ def load_transactions(file_path: str) -> pd.DataFrame:
         'tx_type': str,
         'base_amt': float,
         'tran_timestamp': str,
-        'is_sar': bool,
+        'is_sar': int,
         'alert_id': int
     }
 
@@ -51,7 +32,7 @@ def generate_feature_vectors(input_file_path: str, output_folder_path: str):
     feat_df = load_transactions(input_file_path)
     feat_df.drop(['tran_id', 'alert_id'], axis=1, inplace=True)
 
-    categories = pd.get_dummies(feat_df['tx_type'], dtype=bool)
+    categories = pd.get_dummies(feat_df['tx_type'], dtype=int)
 
     for col in reversed(categories.columns):
         feat_df.insert(loc=2, column=str.lower(col), value=categories.loc[:, col])
@@ -64,7 +45,7 @@ def generate_feature_vectors(input_file_path: str, output_folder_path: str):
         pickle.dump(csr_matrix(feat_df.drop('is_sar', axis=1).values.tolist()), f)
 
     with open(output_folder_path + 'ind.amlsim.ally', 'wb') as f:
-        pickle.dump(feat_df['is_sar'].values, f)
+        pickle.dump(np.array(feat_df['is_sar'].values).reshape(-1, 1), f)
 
     feat_df_train_x, feat_df_test_x, feat_df_train_y, feat_df_test_y = train_test_split(
         feat_df.drop('is_sar', axis=1),
@@ -83,10 +64,10 @@ def generate_feature_vectors(input_file_path: str, output_folder_path: str):
         pickle.dump(feat_csr_test_x, f)
 
     with open(output_folder_path + 'ind.amlsim.y', 'wb') as f:
-        pickle.dump(feat_df_train_y.values, f)
+        pickle.dump(np.array(feat_df_train_y.values).reshape(-1, 1), f)
 
     with open(output_folder_path + 'ind.amlsim.ty', 'wb') as f:
-        pickle.dump(feat_df_test_y.values, f)
+        pickle.dump(np.array(feat_df_train_y.values).reshape(-1, 1), f)
 
     with open(output_folder_path + 'ind.amlsim.test.index', 'w') as f:
         for v in feat_df_test_x['orig_acct']:
