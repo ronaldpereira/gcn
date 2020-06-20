@@ -21,6 +21,7 @@ All objects above must be saved using python pickle module.
 import argparse
 import datetime
 import pickle
+from collections import defaultdict
 
 import pandas as pd
 from scipy.sparse import csr_matrix
@@ -60,10 +61,10 @@ def generate_feature_vectors(input_file_path: str, output_folder_path: str):
                                  pd.Timestamp('1970-01-01 00:00:00+00:00')) // pd.Timedelta('1s')
 
     with open(output_folder_path + 'ind.amlsim.allx', 'wb') as f:
-        pickle.dump(feat_df.drop('is_sar', axis=1), f)
+        pickle.dump(csr_matrix(feat_df.drop('is_sar', axis=1).values.tolist()), f)
 
     with open(output_folder_path + 'ind.amlsim.ally', 'wb') as f:
-        pickle.dump(feat_df['is_sar'], f)
+        pickle.dump(feat_df['is_sar'].values, f)
 
     feat_df_train_x, feat_df_test_x, feat_df_train_y, feat_df_test_y = train_test_split(
         feat_df.drop('is_sar', axis=1),
@@ -74,8 +75,6 @@ def generate_feature_vectors(input_file_path: str, output_folder_path: str):
 
     feat_csr_train_x = csr_matrix(feat_df_train_x.values.tolist())
     feat_csr_test_x = csr_matrix(feat_df_test_x.values.tolist())
-    feat_csr_train_y = csr_matrix(feat_df_train_y.values.tolist())
-    feat_csr_test_y = csr_matrix(feat_df_test_y.values.tolist())
 
     with open(output_folder_path + 'ind.amlsim.x', 'wb') as f:
         pickle.dump(feat_csr_train_x, f)
@@ -84,10 +83,10 @@ def generate_feature_vectors(input_file_path: str, output_folder_path: str):
         pickle.dump(feat_csr_test_x, f)
 
     with open(output_folder_path + 'ind.amlsim.y', 'wb') as f:
-        pickle.dump(feat_csr_train_y, f)
+        pickle.dump(feat_df_train_y.values, f)
 
     with open(output_folder_path + 'ind.amlsim.ty', 'wb') as f:
-        pickle.dump(feat_csr_test_y, f)
+        pickle.dump(feat_df_test_y.values, f)
 
     with open(output_folder_path + 'ind.amlsim.test.index', 'w') as f:
         for v in feat_df_test_x['orig_acct']:
@@ -97,7 +96,7 @@ def generate_feature_vectors(input_file_path: str, output_folder_path: str):
 def generate_graph(input_file_path: str, output_folder_path: str):
     df = load_transactions(input_file_path)
 
-    graph = {}
+    graph = defaultdict()
     for i, row in df.iterrows():
         try:
             graph[row['orig_acct']].append(row['bene_acct'])

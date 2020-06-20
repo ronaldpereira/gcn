@@ -52,7 +52,8 @@ placeholders = {
     'labels': tf.placeholder(tf.float32, shape=(None, y_train.shape[1])),
     'labels_mask': tf.placeholder(tf.int32),
     'dropout': tf.placeholder_with_default(0., shape=()),
-    'num_features_nonzero': tf.placeholder(tf.int32)  # helper variable for sparse dropout
+    'num_features_nonzero':
+        tf.placeholder(tf.int32)  # helper variable for sparse dropout
 }
 
 # Create model
@@ -91,11 +92,12 @@ for epoch in range(FLAGS.epochs):
     cost_val.append(cost)
 
     # Print results
-    print("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(outs[1]),
-          "train_acc=", "{:.5f}".format(outs[2]), "val_loss=", "{:.5f}".format(cost),
-          "val_acc=", "{:.5f}".format(acc), "time=", "{:.5f}".format(time.time() - t))
+    print("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(outs[1]), "train_acc=",
+          "{:.5f}".format(outs[2]), "val_loss=", "{:.5f}".format(cost), "val_acc=",
+          "{:.5f}".format(acc), "time=", "{:.5f}".format(time.time() - t))
 
-    if epoch > FLAGS.early_stopping and cost_val[-1] > np.mean(cost_val[-(FLAGS.early_stopping+1):-1]):
+    if epoch > FLAGS.early_stopping and cost_val[-1] > np.mean(
+            cost_val[-(FLAGS.early_stopping + 1):-1]):
         print("Early stopping...")
         break
 
@@ -103,5 +105,5 @@ print("Optimization Finished!")
 
 # Testing
 test_cost, test_acc, test_duration = evaluate(features, support, y_test, test_mask, placeholders)
-print("Test set results:", "cost=", "{:.5f}".format(test_cost),
-      "accuracy=", "{:.5f}".format(test_acc), "time=", "{:.5f}".format(test_duration))
+print("Test set results:", "cost=", "{:.5f}".format(test_cost), "accuracy=",
+      "{:.5f}".format(test_acc), "time=", "{:.5f}".format(test_duration))
