@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 
 SEED = 1212
+np.set_printoptions(suppress=True, formatter={'float_kind': '{:0.2f}'.format})
 
 
 def load_transactions(file_path: str) -> pd.DataFrame:
@@ -78,22 +79,17 @@ def generate_feature_vectors(input_file_path: str, output_folder_path: str):
         pickle.dump(ohe.fit_transform(feat_df_test_y.values.reshape(-1, 1)), f)
 
     with open(output_folder_path + 'ind.amlsim.test.index', 'w') as f:
-        for v in feat_df_test_x['orig_acct']:
+        for v in feat_df_test_x.index:
             f.write(str(v) + '\n')
 
 
 def generate_graph(input_file_path: str, output_folder_path: str):
     df = load_transactions(input_file_path)
 
-    graph = defaultdict()
+    graph = defaultdict(list)
     for i, row in df.iterrows():
-        try:
-            graph[row['orig_acct']].append(row['bene_acct'])
-        except KeyError:
-            graph[row['orig_acct']] = [row['bene_acct']]
-
-    for v in graph.keys():
-        graph[v] = list(set(graph[v]))
+        graph[i] = sorted(df.index[df['orig_acct'] == row['orig_acct']].tolist())
+        graph[i].remove(i)
 
     with open(output_folder_path + 'ind.amlsim.graph', 'wb') as f:
         pickle.dump(graph, f)
