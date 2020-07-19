@@ -147,4 +147,8 @@ cython_debug/
 # Local History for Visual Studio Code
 .history/
 
-gcn/data/ind.amlsim.graph
+gcn/data/
+!gcn/data/*.csv
+!gcn/data/ind.citeseet.*
+!gcn/data/ind.cora.*
+!gcn/data/ind.pubmed.*
