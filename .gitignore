@@ -146,3 +146,5 @@ cython_debug/
 
 # Local History for Visual Studio Code
 .history/
+
+gcn/data/ind.amlsim.graph
