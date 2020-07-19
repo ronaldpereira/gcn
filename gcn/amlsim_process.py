@@ -30,7 +30,7 @@ def load_transactions(file_path: str) -> pd.DataFrame:
     return df
 
 
-def generate_feature_vectors(input_file_path: str, output_folder_path: str):
+def generate_feature_vectors(input_file_path: str, output_folder_path: str, output_filename: str):
     feat_df = load_transactions(input_file_path)
     feat_df.drop(['tran_id', 'alert_id'], axis=1, inplace=True)
 
@@ -43,12 +43,12 @@ def generate_feature_vectors(input_file_path: str, output_folder_path: str):
     feat_df['tran_timestamp'] = (feat_df['tran_timestamp'] -
                                  pd.Timestamp('1970-01-01 00:00:00+00:00')) // pd.Timedelta('1s')
 
-    with open(output_folder_path + 'ind.amlsim.allx', 'wb') as f:
+    with open(output_folder_path + 'ind.' + output_filename + '.allx', 'wb') as f:
         pickle.dump(
             csr_matrix(feat_df.drop(['is_sar', 'orig_acct', 'bene_acct'], axis=1).values.tolist()),
             f)
 
-    with open(output_folder_path + 'ind.amlsim.ally', 'wb') as f:
+    with open(output_folder_path + 'ind.' + output_filename + '.ally', 'wb') as f:
         ohe = OneHotEncoder(sparse=False, dtype=int)
         pickle.dump(ohe.fit_transform(feat_df['is_sar'].values.reshape(-1, 1)), f)
 
@@ -64,26 +64,26 @@ def generate_feature_vectors(input_file_path: str, output_folder_path: str):
     feat_csr_test_x = csr_matrix(
         feat_df_test_x.drop(['orig_acct', 'bene_acct'], axis=1).values.tolist())
 
-    with open(output_folder_path + 'ind.amlsim.x', 'wb') as f:
+    with open(output_folder_path + 'ind.' + output_filename + '.x', 'wb') as f:
         pickle.dump(feat_csr_train_x, f)
 
-    with open(output_folder_path + 'ind.amlsim.tx', 'wb') as f:
+    with open(output_folder_path + 'ind.' + output_filename + '.tx', 'wb') as f:
         pickle.dump(feat_csr_test_x, f)
 
-    with open(output_folder_path + 'ind.amlsim.y', 'wb') as f:
+    with open(output_folder_path + 'ind.' + output_filename + '.y', 'wb') as f:
         ohe = OneHotEncoder(sparse=False, dtype=int)
         pickle.dump(ohe.fit_transform(feat_df_train_y.values.reshape(-1, 1)), f)
 
-    with open(output_folder_path + 'ind.amlsim.ty', 'wb') as f:
+    with open(output_folder_path + 'ind.' + output_filename + '.ty', 'wb') as f:
         ohe = OneHotEncoder(sparse=False, dtype=int)
         pickle.dump(ohe.fit_transform(feat_df_test_y.values.reshape(-1, 1)), f)
 
-    with open(output_folder_path + 'ind.amlsim.test.index', 'w') as f:
+    with open(output_folder_path + 'ind.' + output_filename + '.test.index', 'w') as f:
         for v in feat_df_test_x.index:
             f.write(str(v) + '\n')
 
 
-def generate_graph(input_file_path: str, output_folder_path: str):
+def generate_graph(input_file_path: str, output_folder_path: str, output_filename: str):
     df = load_transactions(input_file_path)
 
     graph = defaultdict(list)
@@ -91,7 +91,7 @@ def generate_graph(input_file_path: str, output_folder_path: str):
         graph[i] = sorted(df.index[df['orig_acct'] == row['orig_acct']].tolist())
         graph[i].remove(i)
 
-    with open(output_folder_path + 'ind.amlsim.graph', 'wb') as f:
+    with open(output_folder_path + 'ind.' + output_filename + '.graph', 'wb') as f:
         pickle.dump(graph, f)
 
 
@@ -100,6 +100,11 @@ def arg_parser():
 
     parser.add_argument('input', type=str, help='AMLSim transactions data input file path.')
     parser.add_argument('output', type=str, help='Transformed AMLSim data folder output path.')
+    parser.add_argument('-f',
+                        '--filename',
+                        type=str,
+                        default='amlsim',
+                        help='Output file name. Defaults to \'amlsim\'')
 
     args = parser.parse_args()
 
@@ -108,8 +113,8 @@ def arg_parser():
 
 def generate_amlsim_data():
     args = arg_parser()
-    generate_feature_vectors(args.input, args.output)
-    generate_graph(args.input, args.output)
+    generate_feature_vectors(args.input, args.output, args.filename)
+    generate_graph(args.input, args.output, args.filename)
 
 
 if __name__ == '__main__':
