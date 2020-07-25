@@ -6,6 +6,7 @@ import tensorflow as tf
 
 from gcn.utils import *
 from gcn.models import GCN, MLP
+from sklearn.metrics import f1_score
 
 # Set random seed
 seed = 123
@@ -67,8 +68,8 @@ sess = tf.Session()
 def evaluate(features, support, labels, mask, placeholders):
     t_test = time.time()
     feed_dict_val = construct_feed_dict(features, support, labels, mask, placeholders)
-    outs_val = sess.run([model.loss, model.accuracy], feed_dict=feed_dict_val)
-    return outs_val[0], outs_val[1], (time.time() - t_test)
+    outs_val = sess.run([model.loss, model.accuracy, model.outputs], feed_dict=feed_dict_val)
+    return outs_val[0], outs_val[1], outs_val[2], (time.time() - t_test)
 
 
 # Init variables
@@ -88,7 +89,7 @@ for epoch in range(FLAGS.epochs):
     outs = sess.run([model.opt_op, model.loss, model.accuracy], feed_dict=feed_dict)
 
     # Validation
-    cost, acc, duration = evaluate(features, support, y_val, val_mask, placeholders)
+    cost, acc, y_pred, duration = evaluate(features, support, y_val, val_mask, placeholders)
     cost_val.append(cost)
 
     # Print results
@@ -104,6 +105,13 @@ for epoch in range(FLAGS.epochs):
 print("Optimization Finished!")
 
 # Testing
-test_cost, test_acc, test_duration = evaluate(features, support, y_test, test_mask, placeholders)
+test_cost, test_acc, test_y_pred, test_duration = evaluate(features, support, y_test, test_mask,
+                                                           placeholders)
 print("Test set results:", "cost=", "{:.5f}".format(test_cost), "accuracy=",
       "{:.5f}".format(test_acc), "time=", "{:.5f}".format(test_duration))
+
+test_y_pred = np.array(list(map(lambda x: not (x[0] > x[1]), test_y_pred)))
+print("F1-Score of non-Frauds: %f" %
+      f1_score(test_mask, test_y_pred, average='binary', pos_label=False))
+print("F1-Score of Frauds: %f" % f1_score(test_mask, test_y_pred, average='binary'))
+print("F1-Score macro: %f" % f1_score(test_mask, test_y_pred, average='macro'))
