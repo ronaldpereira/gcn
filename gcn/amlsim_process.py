@@ -8,6 +8,7 @@ import pandas as pd
 from scipy.sparse import csr_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
+from tqdm import tqdm
 
 SEED = 1212
 np.set_printoptions(suppress=True, formatter={'float_kind': '{:0.2f}'.format})
@@ -85,7 +86,7 @@ def generate_graph(input_file_path: str, output_folder_path: str, output_filenam
     df = load_transactions(input_file_path)
 
     graph = defaultdict(list)
-    for i, row in df.iterrows():
+    for i, row in tqdm(df.iterrows(), total=df.shape[0]):
         graph[i] = sorted(df.index[df['orig_acct'] == row['orig_acct']].tolist())
         graph[i].remove(i)
 
