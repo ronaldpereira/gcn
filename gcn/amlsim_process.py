@@ -1,7 +1,6 @@
 import argparse
-import datetime
-import pickle
 from collections import defaultdict
+import pickle
 
 import numpy as np
 import pandas as pd
@@ -41,20 +40,24 @@ def generate_feature_vectors(input_file_path: str, output_folder_path: str, outp
         feat_df.insert(loc=2, column=str.lower(col), value=categories.loc[:, col])
     feat_df.drop('tx_type', axis=1, inplace=True)
 
-    feat_df['tran_timestamp'] = (feat_df['tran_timestamp'] -
-                                 pd.Timestamp('1970-01-01 00:00:00+00:00')) // pd.Timedelta('1s')
+    feat_df['tran_timestamp'] = (
+        feat_df['tran_timestamp'] - pd.Timestamp('1970-01-01 00:00:00+00:00')
+    ) // pd.Timedelta('1s')
 
     feat_df_train_x, feat_df_test_x, feat_df_train_y, feat_df_test_y = train_test_split(
         feat_df.drop('is_sar', axis=1),
         feat_df['is_sar'],
         train_size=0.8,
         shuffle=True,
-        random_state=SEED)
+        random_state=SEED
+    )
 
     feat_csr_train_x = csr_matrix(
-        feat_df_train_x.drop(['orig_acct', 'bene_acct'], axis=1).values.tolist())
+        feat_df_train_x.drop(['orig_acct', 'bene_acct'], axis=1).values.tolist()
+    )
     feat_csr_test_x = csr_matrix(
-        feat_df_test_x.drop(['orig_acct', 'bene_acct'], axis=1).values.tolist())
+        feat_df_test_x.drop(['orig_acct', 'bene_acct'], axis=1).values.tolist()
+    )
 
     with open(output_folder_path + 'ind.' + output_filename + '.allx', 'wb') as f:
         pickle.dump(feat_csr_train_x, f)
@@ -87,7 +90,11 @@ def generate_graph(input_file_path: str, output_folder_path: str, output_filenam
 
     graph = defaultdict(list)
     for i, row in tqdm(df.iterrows(), total=df.shape[0]):
-        graph[i] = sorted(df.index[df['orig_acct'] == row['orig_acct']].tolist())
+        graph[i] = sorted(
+            df.index[(df['orig_acct'] == row['orig_acct']) | (df['bene_acct'] == row['bene_acct']) |
+                     (df['orig_acct'] == row['bene_acct']) |
+                     (df['bene_acct'] == row['orig_acct'])].tolist()
+        )
         graph[i].remove(i)
 
     with open(output_folder_path + 'ind.' + output_filename + '.graph', 'wb') as f:
@@ -99,11 +106,13 @@ def arg_parser():
 
     parser.add_argument('input', type=str, help='AMLSim transactions data input file path.')
     parser.add_argument('output', type=str, help='Transformed AMLSim data folder output path.')
-    parser.add_argument('-f',
-                        '--filename',
-                        type=str,
-                        default='amlsim',
-                        help='Output file name. Defaults to \'amlsim\'')
+    parser.add_argument(
+        '-f',
+        '--filename',
+        type=str,
+        default='amlsim',
+        help='Output file name. Defaults to \'amlsim\''
+    )
 
     args = parser.parse_args()
 
