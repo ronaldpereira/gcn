@@ -12,7 +12,9 @@
             "program": "${workspaceFolder}/gcn/train.py",
             "args": [
                 "--dataset",
-                "amlsim"
+                "amlsim_100",
+                "--model",
+                "gcn"
             ],
             "console": "integratedTerminal"
         }

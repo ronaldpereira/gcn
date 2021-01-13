@@ -5,3 +5,4 @@ numpy==1.18.2
 tensorflow==1.15.2
 pandas
 scikit-learn
+tqdm
