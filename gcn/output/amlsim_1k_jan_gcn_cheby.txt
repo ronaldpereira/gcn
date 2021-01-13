@@ -1,0 +1,26 @@
+Calculating Chebyshev polynomials up to order 3...
+Epoch: 0001 train_loss= 0.84721 train_acc= 0.46843 val_loss= 0.59053 val_acc= 0.97000 time= 5.86038
+Epoch: 0002 train_loss= 0.64242 train_acc= 0.66049 val_loss= 0.44703 val_acc= 0.99000 time= 5.63407
+Epoch: 0003 train_loss= 0.48662 train_acc= 0.81072 val_loss= 0.33498 val_acc= 0.99000 time= 5.50628
+Epoch: 0004 train_loss= 0.36149 train_acc= 0.91802 val_loss= 0.25113 val_acc= 0.99000 time= 5.54052
+Epoch: 0005 train_loss= 0.26222 train_acc= 0.97885 val_loss= 0.19056 val_acc= 0.99000 time= 5.64147
+Epoch: 0006 train_loss= 0.19532 train_acc= 0.99182 val_loss= 0.14809 val_acc= 0.99000 time= 5.67804
+Epoch: 0007 train_loss= 0.14567 train_acc= 0.99259 val_loss= 0.11887 val_acc= 0.99000 time= 5.73780
+Epoch: 0008 train_loss= 0.11301 train_acc= 0.99290 val_loss= 0.09888 val_acc= 0.99000 time= 5.54802
+Epoch: 0009 train_loss= 0.09478 train_acc= 0.99290 val_loss= 0.08546 val_acc= 0.99000 time= 5.88874
+Epoch: 0010 train_loss= 0.08087 train_acc= 0.99290 val_loss= 0.07695 val_acc= 0.99000 time= 5.60319
+Epoch: 0011 train_loss= 0.07141 train_acc= 0.99290 val_loss= 0.07196 val_acc= 0.99000 time= 5.60753
+Epoch: 0012 train_loss= 0.06351 train_acc= 0.99290 val_loss= 0.06935 val_acc= 0.99000 time= 5.52234
+Epoch: 0013 train_loss= 0.05894 train_acc= 0.99290 val_loss= 0.06836 val_acc= 0.99000 time= 5.79582
+Epoch: 0014 train_loss= 0.05799 train_acc= 0.99290 val_loss= 0.06841 val_acc= 0.99000 time= 5.54481
+Epoch: 0015 train_loss= 0.05665 train_acc= 0.99290 val_loss= 0.06912 val_acc= 0.99000 time= 5.87923
+Epoch: 0016 train_loss= 0.05720 train_acc= 0.99290 val_loss= 0.07022 val_acc= 0.99000 time= 5.73679
+Epoch: 0017 train_loss= 0.05306 train_acc= 0.99290 val_loss= 0.07153 val_acc= 0.99000 time= 5.56409
+Epoch: 0018 train_loss= 0.05495 train_acc= 0.99290 val_loss= 0.07290 val_acc= 0.99000 time= 5.50113
+Epoch: 0019 train_loss= 0.05647 train_acc= 0.99290 val_loss= 0.07426 val_acc= 0.99000 time= 5.78596
+Early stopping...
+Optimization Finished!
+Test set results: cost= 0.03738 accuracy= 0.99506 time= 2.17423
+F1-Score of non-Frauds: 0.888843
+F1-Score of Frauds: 0.000000
+F1-Score macro: 0.444422
