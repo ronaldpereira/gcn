@@ -18,7 +18,12 @@
 # python train.py --dataset amlsim_oversample --model gcn_cheby > output/amlsim_oversample_gcn_cheby.txt
 # python train.py --dataset amlsim_oversample --model dense > output/amlsim_oversample_dense.txt
 
-python amlsim_process.py data/transactions_1k.csv data/ --filename amlsim_1k
-python train.py --dataset amlsim_1k --model gcn > output/amlsim_1k_gcn.txt
-python train.py --dataset amlsim_1k --model gcn_cheby > output/amlsim_1k_gcn_cheby.txt
-python train.py --dataset amlsim_1k --model dense > output/amlsim_1k_dense.txt
+# python amlsim_process.py data/transactions_1k.csv data/ --filename amlsim_1k
+# python train.py --dataset amlsim_1k --model gcn > output/amlsim_1k_gcn.txt
+# python train.py --dataset amlsim_1k --model gcn_cheby > output/amlsim_1k_gcn_cheby.txt
+# python train.py --dataset amlsim_1k --model dense > output/amlsim_1k_dense.txt
+
+python amlsim_process.py data/transactions_1k_jan.csv data/ --filename amlsim_1k_jan
+python train.py --dataset amlsim_1k_jan --model gcn > output/amlsim_1k_jan_gcn.txt
+python train.py --dataset amlsim_1k_jan --model gcn_cheby > output/amlsim_1k_jan_gcn_cheby.txt
+python train.py --dataset amlsim_1k_jan --model dense > output/amlsim_1k_jan_dense.txt
